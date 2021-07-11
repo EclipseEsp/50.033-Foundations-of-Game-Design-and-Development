@@ -5,15 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class SpawnManager : MonoBehaviour
 {
+    public static SpawnManager spawnManager;
     // Start is called before the first frame update
-    float groundDistance = -1.0f;
+    float groundDistance = -4.0f;
     void Start()
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 2; j ++){
             spawnFromPooler(ObjectType.greenEnemy);
+            spawnFromPooler(ObjectType.gombaEnemy);
+        }
+
+        GameManager.OnEnemyDeath += spawnNewEnemy;
 
     }
 
+    // void startSpawn(Scene scene, LoadSceneMode mode)
+    // {
+    //     for (int j = 0; j < 2; j++){
+    //         spawnFromPooler(ObjectType.gombaEnemy);
+    //     }
+    // }
 
     void spawnFromPooler(ObjectType i)
     {
@@ -22,8 +33,11 @@ public class SpawnManager : MonoBehaviour
         if (item != null)
         {
             //set position
-            item.transform.localScale = new Vector3(1, 1, 1);
-            item.transform.position = new Vector3(Random.Range(-4.5f, 4.5f), groundDistance + item.GetComponent<SpriteRenderer>().bounds.extents.y, 0);
+            if(i == ObjectType.gombaEnemy) item.transform.localScale = new Vector3(1, 1, 1);
+            else item.transform.localScale = new Vector3(0.6137f, 0.6137f, 0.6137f);
+            // item.transform.localScale = new Vector3(1, 1, 1);
+            item.transform.position = new Vector3(Random.Range(-4.5f, 4.5f), groundDistance + 
+            item.GetComponent<SpriteRenderer>().bounds.extents.y, 0);
             item.SetActive(true);
         }
         else
@@ -39,5 +53,5 @@ public class SpawnManager : MonoBehaviour
         spawnFromPooler(i);
 
     }
-
+    
 }

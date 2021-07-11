@@ -12,14 +12,18 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D marioBody;
     private SpriteRenderer marioSprite;
     private Animator marioAnimator;
+    private AnimatorOverrideController animatorOverrideController;
+    public AudioClip clip1;
+    public AudioClip clip2;
     private AudioSource marioAudioSource;
+    public GameObject PowerUpText;
 
     private bool onGroundState = true;
     private bool faceRightState = true;
     private bool countScoreState = false;
 
 
-    public Transform enemyLocation;
+    // public Transform enemyLocation;
     public Text scoreText;
     private int score = 0;
    
@@ -33,6 +37,7 @@ public class PlayerController : MonoBehaviour
         marioSprite = GetComponent<SpriteRenderer>();
         marioAnimator = GetComponent<Animator>();
         marioAudioSource = GetComponent<AudioSource>();
+        GameManager.OnPlayerDeath += PlayerDiesSequence; // Subscribe to event in GameManager
     }
 
     public float maxSpeed = 10;
@@ -68,12 +73,13 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Enemy"))
         {
             Debug.Log("Collided with Gomba!");
-            StartCoroutine(Timer());
+            // StartCoroutine(Timer());
         }
     }
 
     void PlayJumpSound(){
-        marioAudioSource.PlayOneShot(marioAudioSource.clip);
+        // marioAudioSource.PlayOneShot(marioAudioSource.clip);
+        marioAudioSource.PlayOneShot(clip1);
     }
     IEnumerator Timer(){
         yield return new WaitForSeconds(1f);
@@ -126,19 +132,53 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        // Powerup keys
+        if (Input.GetKeyDown("z")){
+            // PowerUpText.transform.position = marioBody.position;
+            GameObject PowerUp = Instantiate(PowerUpText, gameObject.transform);
+            PowerUp.GetComponent<TMPro.TextMeshPro>().SetText("Speed Boost");
+            // marioAnimator.SetTrigger("PowerUp");
+            Destroy(PowerUp,5f);
+            
+            // PowerUpText.text = "Jump Up";
+            // PowerUpText.enabled = true;
+            CentralManager.centralManagerInstance.consumePowerup(KeyCode.Z,this.gameObject);
+        }
+
+        if (Input.GetKeyDown("x")){
+            GameObject PowerUp = Instantiate(PowerUpText, gameObject.transform);
+            PowerUp.GetComponent<TMPro.TextMeshPro>().SetText("Jump Boost");
+            // marioAnimator.SetTrigger("PowerUp");
+            Destroy(PowerUp,5f);
+            // PowerUpText.transform.position = marioBody.position;
+            // PowerUpText.text = "Speed Up";
+            // PowerUpText.enabled = true;
+            CentralManager.centralManagerInstance.consumePowerup(KeyCode.X,this.gameObject);
+        }
+
         marioAnimator.SetFloat("xSpeed", Mathf.Abs(marioBody.velocity.x));
         marioAnimator.SetBool("onGround", onGroundState);
 
         // when jumping, and Gomba is near Mario and we haven't registered our score
-        if (!onGroundState && countScoreState)
-        {
-            if (Mathf.Abs(transform.position.x - enemyLocation.position.x) < 0.5f)
-            {
-                countScoreState =false;
-                score++;
-                Debug.Log(score);
-            }
-        }
+        // if (!onGroundState && countScoreState)
+        // {
+        //     if (Mathf.Abs(transform.position.x - enemyLocation.position.x) < 0.5f)
+        //     {
+        //         countScoreState =false;
+        //         score++;
+        //         Debug.Log(score);
+        //     }
+        // }
+    }
+
+    void PlayerDiesSequence(){
+        // Mario dies
+        Debug.Log("Mario dies");
+        // do whatever you wan here, animate etc
+        // ...
+        marioAudioSource.PlayOneShot(clip2);
+        marioBody.constraints = RigidbodyConstraints2D.FreezeAll;
+        marioAnimator.SetBool("onDeath",true);
     }
 
 }

@@ -9,6 +9,7 @@ TagManager:
   - Obstacles
   - Pipe
   - Ground Obstacles
+  - PowerUp
   layers:
   - Default
   - TransparentFX

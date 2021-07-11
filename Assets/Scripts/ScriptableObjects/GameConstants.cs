@@ -36,4 +36,9 @@ public class GameConstants : ScriptableObject
     
     // for testing
     public  int testValue;
+
+    // for enemy patrol in EnemyController2.cs
+    public float maxOffset = 5.0f;
+    public float enemyPatroltime = 2.0f;
+    public float groundSurface = -4.0f;
 }
